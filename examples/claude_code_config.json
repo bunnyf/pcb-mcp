@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "kicad": {
+      "command": "ssh",
+      "args": [
+        "-o", "StrictHostKeyChecking=no",
+        "-o", "BatchMode=yes",
+        "your-vps-hostname-or-alias",
+        "python3 /root/pcb/mcp/kicad_mcp_server.py"
+      ]
+    }
+  }
+}
