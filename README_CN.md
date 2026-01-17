@@ -158,6 +158,21 @@ chmod +x /root/pcb/mcp/kicad_mcp_server.py
 |------|------|
 | `read_file` | 读取文件内容 |
 
+## 完整示例项目
+
+### 🎯 USB NVMe 适配器
+
+一个**生产就绪的 PCB 设计**，完全使用 KiCad MCP Server + Claude Code 创建：
+
+- **设计**: USB-C 转 M.2 NVMe 适配器（4 层 PCB）
+- **工作流**: 100% AI 辅助设计，无需本地 EDA 软件
+- **组件**: ASM2362 桥接芯片、TPS62913 DC-DC、USB-C 连接器
+- **输出**: 制造文件、3D 渲染图、完整文档
+
+查看完整示例：[examples/usb_nvme_adapter](./examples/usb_nvme_adapter/)
+
+![3D 渲染图](./examples/usb_nvme_adapter/3d/pcb_iso.png)
+
 ## 使用示例
 
 ### 基本工作流

@@ -158,6 +158,21 @@ Add to your Claude Code MCP settings (`~/.claude/claude_desktop_config.json`):
 |------|-------------|
 | `read_file` | Read file content |
 
+## Complete Example Project
+
+### 🎯 USB NVMe Adapter
+
+A **production-ready PCB design** created entirely using KiCad MCP Server + Claude Code:
+
+- **Design**: USB-C to M.2 NVMe adapter (4-layer PCB)
+- **Workflow**: 100% AI-assisted design, no local EDA software
+- **Components**: ASM2362 bridge, TPS62913 DC-DC, USB-C connector
+- **Outputs**: Manufacturing files, 3D renders, complete documentation
+
+See the complete example: [examples/usb_nvme_adapter](./examples/usb_nvme_adapter/)
+
+![3D Render](./examples/usb_nvme_adapter/3d/pcb_iso.png)
+
 ## Usage Examples
 
 ### Basic Workflow
