@@ -10,6 +10,11 @@ venv/
 .env.local
 *.env
 
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
 # IDE
 .idea/
 .vscode/

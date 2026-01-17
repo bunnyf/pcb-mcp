@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0,<70.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "kicad-mcp-server"
-version = "3.5.0"  # Also update in kicad_mcp_server/__init__.py
+dynamic = ["version"]
 description = "MCP server for AI-assisted PCB design with KiCad"
 readme = "README.md"
-license = {text = "GPL-3.0-or-later"}
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 authors = [
     {name = "KiCad MCP Contributors"}
@@ -50,6 +50,9 @@ kicad-mcp-server = "kicad_mcp_server.__main__:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["kicad_mcp_server*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "kicad_mcp_server.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
