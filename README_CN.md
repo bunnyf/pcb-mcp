@@ -2,7 +2,21 @@
 
 KiCad 9.x 的 MCP (Model Context Protocol) 服务器，通过 Claude Code 或其他 MCP 客户端实现 AI 辅助 PCB 设计。
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![KiCad 9.x](https://img.shields.io/badge/KiCad-9.x-orange.svg)](https://www.kicad.org/)
+
 [English](./README.md)
+
+## ✨ v3.5.0 新特性
+
+- **🏗️ 模块化架构** - 从 987 行单文件重构为清晰的包结构
+- **🔒 安全加固** - 路径验证、注入防护、文件访问限制
+- **⚙️ 环境变量配置** - 所有设置可通过环境变量配置
+- **🧹 任务清理** - 新增 `cleanup_tasks` 工具管理旧任务
+- **✅ 单元测试** - 55 个全面测试覆盖核心功能
+- **📝 类型注解** - 全代码库类型提示
+- **📊 日志框架** - 结构化日志系统替代 stderr 打印
 
 ## 功能特性
 
@@ -43,7 +57,7 @@ KiCad 9.x 的 MCP (Model Context Protocol) 服务器，通过 Claude Code 或其
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/pcb-mcp.git
+git clone https://github.com/bunnyf/pcb-mcp.git
 cd pcb-mcp
 
 # 运行安装脚本
@@ -87,7 +101,7 @@ chmod +x /root/pcb/mcp/kicad_mcp_server.py
 }
 ```
 
-## 可用工具 (22 个)
+## 可用工具 (23 个)
 
 ### 检查类
 | 工具 | 描述 |
@@ -106,6 +120,7 @@ chmod +x /root/pcb/mcp/kicad_mcp_server.py
 |------|------|
 | `get_task_status` | 查询异步任务状态 |
 | `list_tasks` | 列出所有异步任务 |
+| `cleanup_tasks` | 清理旧的已完成/失败任务 |
 
 ### 信息类
 | 工具 | 描述 |
@@ -204,9 +219,74 @@ rsync -avz ~/pcb/my_board/ vps:/root/pcb/projects/my_board/
 rsync -avz vps:/root/pcb/projects/my_board/output/ ~/pcb/my_board/output/
 ```
 
+## 配置
+
+所有服务器设置都可以通过环境变量配置。详见 [`.env.example`](./.env.example)。
+
+### 主要环境变量
+
+```bash
+# 基础目录
+KICAD_MCP_PROJECTS_BASE=/root/pcb/projects
+KICAD_MCP_TASKS_DIR=/root/pcb/tasks
+
+# 外部工具
+KICAD_MCP_KICAD_CLI=kicad-cli
+KICAD_MCP_FREEROUTING_JAR=/opt/freerouting.jar
+
+# 超时设置（秒）
+KICAD_MCP_DEFAULT_TIMEOUT=300
+KICAD_MCP_AUTOROUTE_TIMEOUT=600
+
+# 文件限制
+KICAD_MCP_MAX_FILE_SIZE=10485760  # 10MB
+
+# 渲染设置
+KICAD_MCP_RENDER_WIDTH=1920
+KICAD_MCP_RENDER_HEIGHT=1080
+
+# 任务清理
+KICAD_MCP_TASK_MAX_AGE_DAYS=7
+```
+
+## 安全特性
+
+v3.5.0 包含全面的安全加固：
+
+- **路径验证** - 防止目录遍历攻击
+- **文件访问限制** - `read_file` 工具仅限访问 projects/tasks 目录
+- **Shell 注入防护** - 所有动态脚本生成使用 `shlex.quote()`
+- **输入验证** - 项目名称经过清理以防止路径操纵
+- **安全命令执行** - 带超时保护的正确子进程处理
+
+## 开发
+
+### 运行测试
+
+```bash
+# 安装开发依赖
+pip3 install -r requirements.txt
+
+# 运行测试
+pytest tests/ -v
+
+# 运行覆盖率测试
+pytest tests/ --cov=kicad_mcp_server --cov-report=html
+```
+
+### 代码质量
+
+```bash
+# 类型检查
+mypy kicad_mcp_server/
+
+# 代码检查
+ruff check kicad_mcp_server/
+```
+
 ## 许可证
 
-MIT License - 参见 [LICENSE](./LICENSE)
+GNU General Public License v3.0 或更高版本 - 参见 [LICENSE](./LICENSE)
 
 ## 贡献
 

@@ -1,8 +1,22 @@
-# KiCad MCP Server 
+# KiCad MCP Server
 
 A Model Context Protocol (MCP) server for KiCad 9.x, enabling AI-assisted PCB design through Claude Code or other MCP clients.
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![KiCad 9.x](https://img.shields.io/badge/KiCad-9.x-orange.svg)](https://www.kicad.org/)
+
 [中文文档](./README_CN.md)
+
+## ✨ What's New in v3.5.0
+
+- **🏗️ Modular Architecture** - Refactored from 987-line monolithic script to clean package structure
+- **🔒 Security Hardening** - Path validation, injection prevention, restricted file access
+- **⚙️ Environment Configuration** - All settings configurable via environment variables
+- **🧹 Task Cleanup** - New `cleanup_tasks` tool for managing old async tasks
+- **✅ Unit Tests** - 55 comprehensive tests covering core functionality
+- **📝 Type Annotations** - Full type hints throughout codebase
+- **📊 Proper Logging** - Structured logging framework replacing stderr prints
 
 ## Features
 
@@ -43,7 +57,7 @@ Local Machine                    VPS (KiCad 9.x)
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/pcb-mcp.git
+git clone https://github.com/bunnyf/pcb-mcp.git
 cd pcb-mcp
 
 # Run install script
@@ -87,7 +101,7 @@ Add to your Claude Code MCP settings (`~/.claude/claude_desktop_config.json`):
 }
 ```
 
-## Available Tools (22)
+## Available Tools (23)
 
 ### Check
 | Tool | Description |
@@ -106,6 +120,7 @@ Add to your Claude Code MCP settings (`~/.claude/claude_desktop_config.json`):
 |------|-------------|
 | `get_task_status` | Query async task status |
 | `list_tasks` | List all async tasks |
+| `cleanup_tasks` | Clean up old completed/failed tasks |
 
 ### Info
 | Tool | Description |
@@ -204,9 +219,74 @@ rsync -avz ~/pcb/my_board/ vps:/root/pcb/projects/my_board/
 rsync -avz vps:/root/pcb/projects/my_board/output/ ~/pcb/my_board/output/
 ```
 
+## Configuration
+
+All server settings can be configured via environment variables. See [`.env.example`](./.env.example) for details.
+
+### Key Environment Variables
+
+```bash
+# Base directories
+KICAD_MCP_PROJECTS_BASE=/root/pcb/projects
+KICAD_MCP_TASKS_DIR=/root/pcb/tasks
+
+# External tools
+KICAD_MCP_KICAD_CLI=kicad-cli
+KICAD_MCP_FREEROUTING_JAR=/opt/freerouting.jar
+
+# Timeouts (seconds)
+KICAD_MCP_DEFAULT_TIMEOUT=300
+KICAD_MCP_AUTOROUTE_TIMEOUT=600
+
+# File limits
+KICAD_MCP_MAX_FILE_SIZE=10485760  # 10MB
+
+# Render settings
+KICAD_MCP_RENDER_WIDTH=1920
+KICAD_MCP_RENDER_HEIGHT=1080
+
+# Task cleanup
+KICAD_MCP_TASK_MAX_AGE_DAYS=7
+```
+
+## Security Features
+
+v3.5.0 includes comprehensive security hardening:
+
+- **Path Validation** - Prevents directory traversal attacks
+- **Restricted File Access** - `read_file` tool limited to projects/tasks directories
+- **Shell Injection Prevention** - Uses `shlex.quote()` for all dynamic script generation
+- **Input Validation** - Project names sanitized to prevent path manipulation
+- **Safe Command Execution** - Proper subprocess handling with timeout protection
+
+## Development
+
+### Running Tests
+
+```bash
+# Install dev dependencies
+pip3 install -r requirements.txt
+
+# Run tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=kicad_mcp_server --cov-report=html
+```
+
+### Code Quality
+
+```bash
+# Type checking
+mypy kicad_mcp_server/
+
+# Linting
+ruff check kicad_mcp_server/
+```
+
 ## License
 
-MIT License - see [LICENSE](./LICENSE)
+GNU General Public License v3.0 or later - see [LICENSE](./LICENSE)
 
 ## Contributing
 
