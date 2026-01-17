@@ -1,316 +1,153 @@
-<!-- mcp-name: io.github.bunnyf/kicad-mcp-server -->
+# MCP Registry
 
-# KiCad MCP Server
+The MCP registry provides MCP clients with a list of MCP servers, like an app store for MCP servers.
 
-A Model Context Protocol (MCP) server for KiCad 9.x, enabling AI-assisted PCB design through Claude Code or other MCP clients.
+[**📤 Publish my MCP server**](docs/modelcontextprotocol-io/quickstart.mdx) | [**⚡️ Live API docs**](https://registry.modelcontextprotocol.io/docs) | [**👀 Ecosystem vision**](docs/design/ecosystem-vision.md) | 📖 **[Full documentation](./docs)**
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![KiCad 9.x](https://img.shields.io/badge/KiCad-9.x-orange.svg)](https://www.kicad.org/)
+## Development Status
 
-[中文文档](./README_CN.md)
+**2025-10-24 update**: The Registry API has entered an **API freeze (v0.1)** 🎉. For the next month or more, the API will remain stable with no breaking changes, allowing integrators to confidently implement support. This freeze applies to v0.1 while development continues on v0. We'll use this period to validate the API in real-world integrations and gather feedback to shape v1 for general availability. Thank you to everyone for your contributions and patience—your involvement has been key to getting us here!
 
-## ✨ What's New in v3.5.0
+**2025-09-08 update**: The registry has launched in preview 🎉 ([announcement blog post](https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/)). While the system is now more stable, this is still a preview release and breaking changes or data resets may occur. A general availability (GA) release will follow later. We'd love your feedback in [GitHub discussions](https://github.com/modelcontextprotocol/registry/discussions/new?category=ideas) or in the [#registry-dev Discord](https://discord.com/channels/1358869848138059966/1369487942862504016) ([joining details here](https://modelcontextprotocol.io/community/communication)).
 
-- **🏗️ Modular Architecture** - Refactored from 987-line monolithic script to clean package structure
-- **🔒 Security Hardening** - Path validation, injection prevention, restricted file access
-- **⚙️ Environment Configuration** - All settings configurable via environment variables
-- **🧹 Task Cleanup** - New `cleanup_tasks` tool for managing old async tasks
-- **✅ Unit Tests** - 55 comprehensive tests covering core functionality
-- **📝 Type Annotations** - Full type hints throughout codebase
-- **📊 Proper Logging** - Structured logging framework replacing stderr prints
-
-## Features
-
-- **DRC/ERC Check** - Design Rule Check and Electrical Rule Check
-- **Zone Fill** - Automatic copper zone filling
-- **Auto-routing** - FreeRouting integration with async support (bypass 10-min timeout)
-- **3D Rendering** - Native KiCad 9 3D render (top/bottom/iso views)
-- **Export** - Gerber, Drill, BOM, Netlist, PDF, SVG, STEP
-- **JLCPCB Package** - Complete manufacturing files for JLCPCB/PCBWay
-
-## Architecture
-
-```
-Local Machine                    VPS (KiCad 9.x)
-┌─────────────────┐              ┌─────────────────────┐
-│  Claude Code    │     MCP      │  MCP Server v3.5.0  │
-│  or MCP Clients │◄────SSH─────►│  kicad-cli + pcbnew │
-└─────────────────┘              │  + FreeRouting      │
-                                 └─────────────────────┘
-```
-
-## Requirements
-
-### VPS
-- Ubuntu 22.04+ or Debian 12+
-- KiCad 9.0.6+
-- Python 3.10+
-- Java 17+ (for FreeRouting)
-- xvfb (for headless rendering)
-
-### Local
-- Claude Code with MCP support
-- SSH access to VPS
-
-## Quick Install
-
-### On VPS
-
-```bash
-# Clone repository
-git clone https://github.com/bunnyf/pcb-mcp.git
-cd pcb-mcp
-
-# Run install script
-chmod +x scripts/install.sh
-./scripts/install.sh
-```
-
-Or manual install:
-
-```bash
-# Install KiCad 9
-sudo add-apt-repository ppa:kicad/kicad-9.0-releases -y
-sudo apt update
-sudo apt install kicad xvfb -y
-
-# Install FreeRouting
-sudo apt install openjdk-17-jre -y
-sudo wget -q https://github.com/freerouting/freerouting/releases/download/v1.9.0/freerouting-1.9.0.jar -O /opt/freerouting.jar
-
-# Setup MCP Server
-mkdir -p /root/pcb/{mcp,projects,tasks}
-cp kicad_mcp_server.py /root/pcb/mcp/
-chmod +x /root/pcb/mcp/kicad_mcp_server.py
-```
-
-### Claude Code Configuration
-
-Add to your Claude Code MCP settings (`~/.claude/claude_desktop_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "kicad": {
-      "command": "ssh",
-      "args": [
-        "your-vps-host",
-        "python3 /root/pcb/mcp/kicad_mcp_server.py"
-      ]
-    }
-  }
-}
-```
-
-## Available Tools (23)
-
-### Check
-| Tool | Description |
-|------|-------------|
-| `run_drc` | PCB Design Rule Check |
-| `run_erc` | Schematic Electrical Rule Check |
-
-### Operations
-| Tool | Description |
-|------|-------------|
-| `fill_zones` | Fill all copper zones |
-| `auto_route` | Auto-routing with FreeRouting (async) |
-
-### Async Tasks
-| Tool | Description |
-|------|-------------|
-| `get_task_status` | Query async task status |
-| `list_tasks` | List all async tasks |
-| `cleanup_tasks` | Clean up old completed/failed tasks |
-
-### Info
-| Tool | Description |
-|------|-------------|
-| `list_projects` | List all projects |
-| `get_board_info` | Board dimensions, layers, components |
-| `get_output_files` | List output files |
-| `get_version` | Version info |
-
-### PCB Export
-| Tool | Description |
-|------|-------------|
-| `export_gerber` | Gerber + Drill files |
-| `export_3d` | 3D render (top/bottom/iso/all) |
-| `export_svg` | PCB SVG images |
-| `export_pdf` | PCB PDF |
-| `export_step` | STEP 3D model |
-
-### Schematic Export
-| Tool | Description |
-|------|-------------|
-| `export_bom` | Bill of Materials (CSV) |
-| `export_netlist` | Netlist (KiCad XML/SPICE) |
-| `export_sch_pdf` | Schematic PDF |
-| `export_sch_svg` | Schematic SVG |
-
-### Manufacturing
-| Tool | Description |
-|------|-------------|
-| `export_jlcpcb` | Complete JLCPCB package |
-| `export_all` | Export all files |
-
-### File
-| Tool | Description |
-|------|-------------|
-| `read_file` | Read file content |
-
-## Complete Example Project
-
-### 🎯 USB NVMe Adapter
-
-A **production-ready PCB design** created entirely using KiCad MCP Server + Claude Code:
-
-- **Design**: USB-C to M.2 NVMe adapter (4-layer PCB)
-- **Workflow**: 100% AI-assisted design, no local EDA software
-- **Components**: ASM2362 bridge, TPS62913 DC-DC, USB-C connector
-- **Outputs**: Manufacturing files, 3D renders, complete documentation
-
-See the complete example: [examples/usb_nvme_adapter](./examples/usb_nvme_adapter/)
-
-![3D Render](./examples/usb_nvme_adapter/3d/pcb_iso.png)
-
-## Usage Examples
-
-### Basic Workflow
-
-```
-User: List projects
-AI: [calls list_projects]
-
-User: Run DRC on my_board
-AI: [calls run_drc with project="my_board"]
-
-User: Generate 3D renders
-AI: [calls export_3d with project="my_board", view="all"]
-
-User: Export for JLCPCB
-AI: [calls export_jlcpcb with project="my_board"]
-```
-
-### Auto-routing (Async)
-
-```
-User: Auto-route my_board
-AI: [calls auto_route] 
-    → Returns task_id: "route_my_board_20241231_101530"
-
-User: Check routing status
-AI: [calls get_task_status with task_id]
-    → {"status": "started", "log_tail": "..."}
-
-# After completion:
-AI: [calls get_task_status]
-    → {"status": "completed", "message": "Auto-routing complete!"}
-```
-
-## Output Directory Structure
-
-```
-project/output/
-├── gerber/      # Gerber + Drill files
-├── bom/         # BOM CSV
-├── netlist/     # Netlist files
-├── 3d/          # 3D renders (PNG) + STEP model
-├── images/      # SVG images
-├── docs/        # PDF documents
-├── reports/     # DRC/ERC reports (JSON)
-├── jlcpcb/      # Complete JLCPCB package
-└── backup/      # Pre-autoroute backups
-```
-
-## Project Sync
-
-Use rsync to sync projects between local and VPS:
-
-```bash
-# Upload to VPS
-rsync -avz ~/pcb/my_board/ vps:/root/pcb/projects/my_board/
-
-# Download from VPS
-rsync -avz vps:/root/pcb/projects/my_board/output/ ~/pcb/my_board/output/
-```
-
-## Configuration
-
-All server settings can be configured via environment variables. See [`.env.example`](./.env.example) for details.
-
-### Key Environment Variables
-
-```bash
-# Base directories
-KICAD_MCP_PROJECTS_BASE=/root/pcb/projects
-KICAD_MCP_TASKS_DIR=/root/pcb/tasks
-
-# External tools
-KICAD_MCP_KICAD_CLI=kicad-cli
-KICAD_MCP_FREEROUTING_JAR=/opt/freerouting.jar
-
-# Timeouts (seconds)
-KICAD_MCP_DEFAULT_TIMEOUT=300
-KICAD_MCP_AUTOROUTE_TIMEOUT=600
-
-# File limits
-KICAD_MCP_MAX_FILE_SIZE=10485760  # 10MB
-
-# Render settings
-KICAD_MCP_RENDER_WIDTH=1920
-KICAD_MCP_RENDER_HEIGHT=1080
-
-# Task cleanup
-KICAD_MCP_TASK_MAX_AGE_DAYS=7
-```
-
-## Security Features
-
-v3.5.0 includes comprehensive security hardening:
-
-- **Path Validation** - Prevents directory traversal attacks
-- **Restricted File Access** - `read_file` tool limited to projects/tasks directories
-- **Shell Injection Prevention** - Uses `shlex.quote()` for all dynamic script generation
-- **Input Validation** - Project names sanitized to prevent path manipulation
-- **Safe Command Execution** - Proper subprocess handling with timeout protection
-
-## Development
-
-### Running Tests
-
-```bash
-# Install dev dependencies
-pip3 install -r requirements.txt
-
-# Run tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=kicad_mcp_server --cov-report=html
-```
-
-### Code Quality
-
-```bash
-# Type checking
-mypy kicad_mcp_server/
-
-# Linting
-ruff check kicad_mcp_server/
-```
-
-## License
-
-GNU General Public License v3.0 or later - see [LICENSE](./LICENSE)
+Current key maintainers:
+- **Adam Jones** (Anthropic) [@domdomegg](https://github.com/domdomegg)  
+- **Tadas Antanavicius** (PulseMCP) [@tadasant](https://github.com/tadasant)
+- **Toby Padilla** (GitHub) [@toby](https://github.com/toby)
+- **Radoslav (Rado) Dimitrov** (Stacklok) [@rdimitrov](https://github.com/rdimitrov)
 
 ## Contributing
 
-Issues and PRs welcome!
+We use multiple channels for collaboration - see [modelcontextprotocol.io/community/communication](https://modelcontextprotocol.io/community/communication).
 
-## Acknowledgments
+Often (but not always) ideas flow through this pipeline:
 
-- [KiCad](https://www.kicad.org/) - Open source EDA
-- [FreeRouting](https://github.com/freerouting/freerouting) - Open source PCB auto-router
-- [Anthropic](https://www.anthropic.com/) - Claude AI and MCP protocol
+- **[Discord](https://modelcontextprotocol.io/community/communication)** - Real-time community discussions
+- **[Discussions](https://github.com/modelcontextprotocol/registry/discussions)** - Propose and discuss product/technical requirements
+- **[Issues](https://github.com/modelcontextprotocol/registry/issues)** - Track well-scoped technical work  
+- **[Pull Requests](https://github.com/modelcontextprotocol/registry/pulls)** - Contribute work towards issues
+
+### Quick start:
+
+#### Pre-requisites
+
+- **Docker**
+- **Go 1.24.x**
+- **ko** - Container image builder for Go ([installation instructions](https://ko.build/install/))
+- **golangci-lint v2.4.0**
+
+#### Running the server
+
+```bash
+# Start full development environment
+make dev-compose
+```
+
+This starts the registry at [`localhost:8080`](http://localhost:8080) with PostgreSQL. The database uses ephemeral storage and is reset each time you restart the containers, ensuring a clean state for development and testing.
+
+**Note:** The registry uses [ko](https://ko.build) to build container images. The `make dev-compose` command automatically builds the registry image with ko and loads it into your local Docker daemon before starting the services.
+
+By default, the registry seeds from the production API with a filtered subset of servers (to keep startup fast). This ensures your local environment mirrors production behavior and all seed data passes validation. For offline development you can seed from a file without validation with `MCP_REGISTRY_SEED_FROM=data/seed.json MCP_REGISTRY_ENABLE_REGISTRY_VALIDATION=false make dev-compose`.
+
+The setup can be configured with environment variables in [docker-compose.yml](./docker-compose.yml) - see [.env.example](./.env.example) for a reference.
+
+<details>
+<summary>Alternative: Running a pre-built Docker image</summary>
+
+Pre-built Docker images are automatically published to GitHub Container Registry:
+
+```bash
+# Run latest stable release
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:latest
+
+# Run latest from main branch (continuous deployment)
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:main
+
+# Run specific release version
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:v1.0.0
+
+# Run development build from main branch
+docker run -p 8080:8080 ghcr.io/modelcontextprotocol/registry:main-20250906-abc123d
+```
+
+**Available tags:** 
+- **Releases**: `latest`, `v1.0.0`, `v1.1.0`, etc.
+- **Continuous**: `main` (latest main branch build)
+- **Development**: `main-<date>-<sha>` (specific commit builds)
+
+</details>
+
+#### Publishing a server
+
+To publish a server, we've built a simple CLI. You can use it with:
+
+```bash
+# Build the latest CLI
+make publisher
+
+# Use it!
+./bin/mcp-publisher --help
+```
+
+See [the publisher guide](./docs/modelcontextprotocol-io/quickstart.mdx) for more details.
+
+#### Other commands
+
+```bash
+# Run lint, unit tests and integration tests
+make check
+```
+
+There are also a few more helpful commands for development. Run `make help` to learn more, or look in [Makefile](./Makefile).
+
+<!--
+For Claude and other AI tools: Always prefer make targets over custom commands where possible.
+-->
+
+## Architecture
+
+### Project Structure
+
+```
+├── cmd/                     # Application entry points
+│   └── publisher/           # Server publishing tool
+├── data/                    # Seed data
+├── deploy/                  # Deployment configuration (Pulumi)
+├── docs/                    # Documentation
+├── internal/                # Private application code
+│   ├── api/                 # HTTP handlers and routing
+│   ├── auth/                # Authentication (GitHub OAuth, JWT, namespace blocking)
+│   ├── config/              # Configuration management
+│   ├── database/            # Data persistence (PostgreSQL)
+│   ├── service/             # Business logic
+│   ├── telemetry/           # Metrics and monitoring
+│   └── validators/          # Input validation
+├── pkg/                     # Public packages
+│   ├── api/                 # API types and structures
+│   │   └── v0/              # Version 0 API types
+│   └── model/               # Data models for server.json
+├── scripts/                 # Development and testing scripts
+├── tests/                   # Integration tests
+└── tools/                   # CLI tools and utilities
+    └── validate-*.sh        # Schema validation tools
+```
+
+### Authentication
+
+Publishing supports multiple authentication methods:
+- **GitHub OAuth** - For publishing by logging into GitHub
+- **GitHub OIDC** - For publishing from GitHub Actions
+- **DNS verification** - For proving ownership of a domain and its subdomains
+- **HTTP verification** - For proving ownership of a domain
+
+The registry validates namespace ownership when publishing. E.g. to publish...:
+- `io.github.domdomegg/my-cool-mcp` you must login to GitHub as `domdomegg`, or be in a GitHub Action on domdomegg's repos
+- `me.adamjones/my-cool-mcp` you must prove ownership of `adamjones.me` via DNS or HTTP challenge
+
+## Community Projects
+
+Check out [community projects](docs/community-projects.md) to explore notable registry-related work created by the community.
+
+## More documentation
+
+See the [documentation](./docs) for more details if your question has not been answered here!
