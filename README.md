@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.bunnyf/kicad-mcp-server -->
+
 # KiCad MCP Server
 
 A Model Context Protocol (MCP) server for KiCad 9.x, enabling AI-assisted PCB design through Claude Code or other MCP clients.

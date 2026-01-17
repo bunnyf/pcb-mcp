@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.bunnyf/kicad-mcp-server -->
+
 # KiCad MCP Server
 
 KiCad 9.x 的 MCP (Model Context Protocol) 服务器，通过 Claude Code 或其他 MCP 客户端实现 AI 辅助 PCB 设计。
