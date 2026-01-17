@@ -18,8 +18,8 @@ A Model Context Protocol (MCP) server for KiCad 9.x, enabling AI-assisted PCB de
 ```
 Local Machine                    VPS (KiCad 9.x)
 ┌─────────────────┐              ┌─────────────────────┐
-│  Claude Code    │     MCP      │  MCP Server v3.4    │
-│  or MCP Client  │◄────SSH─────►│  kicad-cli + pcbnew │
+│  Claude Code    │     MCP      │  MCP Server v3.5.0  │
+│  or MCP Clients │◄────SSH─────►│  kicad-cli + pcbnew │
 └─────────────────┘              │  + FreeRouting      │
                                  └─────────────────────┘
 ```

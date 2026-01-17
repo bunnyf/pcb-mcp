@@ -18,7 +18,7 @@ KiCad 9.x 的 MCP (Model Context Protocol) 服务器，通过 Claude Code 或其
 ```
 本地机器                          VPS (KiCad 9.x)
 ┌─────────────────┐              ┌─────────────────────┐
-│  Claude Code    │     MCP      │  MCP Server v3.4    │
+│  Claude Code    │     MCP      │  MCP Server v3.5.0  │
 │  或 MCP 客户端  │◄────SSH─────►│  kicad-cli + pcbnew │
 └─────────────────┘              │  + FreeRouting      │
                                  └─────────────────────┘
