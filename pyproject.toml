@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kicad-mcp-server"
-version = "3.5.0"
+version = "3.5.0"  # Also update in kicad_mcp_server/__init__.py
 description = "MCP server for AI-assisted PCB design with KiCad"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}

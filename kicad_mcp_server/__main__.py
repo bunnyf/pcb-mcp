@@ -13,6 +13,7 @@ import signal
 import sys
 from typing import NoReturn
 
+from . import __version__
 from .config import get_config
 from .protocol import handle_request
 from .utils import setup_logging, get_logger
@@ -62,7 +63,7 @@ def main() -> NoReturn:
     config = get_config()
 
     # Log startup information
-    logger.info("KiCad MCP Server v3.5.0 starting (KiCad 9.x)")
+    logger.info(f"KiCad MCP Server v{__version__} starting (KiCad 9.x)")
     logger.info(f"pcbnew API: {'available' if HAS_PCBNEW else 'not available'}")
     logger.info(
         f"FreeRouting: {'available' if os.path.exists(config.freerouting_jar) else 'not available'}"

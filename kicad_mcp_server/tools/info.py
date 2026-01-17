@@ -7,6 +7,7 @@ from __future__ import annotations
 import os
 from typing import Any, Optional
 
+from .. import __version__
 from ..config import get_config
 from ..utils import (
     get_logger,
@@ -176,7 +177,7 @@ def tool_version() -> dict[str, Any]:
         "kicad": result.stdout.strip() if result.success else "Not installed",
         "pcbnew_api": HAS_PCBNEW,
         "freerouting": freerouting_ok,
-        "mcp_server": "3.5.0",
+        "mcp_server": __version__,
         "features": [
             "drc", "erc", "fill_zones", "board_info",
             "auto_route_async", "task_status", "task_cleanup",

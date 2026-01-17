@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any, Optional
 
+from . import __version__
 from .tools.registry import TOOLS, get_tool_handler
 from .utils import get_logger
 
@@ -16,7 +17,7 @@ from .utils import get_logger
 # MCP Protocol version
 PROTOCOL_VERSION = "2024-11-05"
 SERVER_NAME = "kicad-mcp"
-SERVER_VERSION = "3.5.0"
+SERVER_VERSION = __version__
 
 
 def handle_request(request: dict[str, Any]) -> Optional[dict[str, Any]]:
